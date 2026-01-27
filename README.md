@@ -64,13 +64,10 @@ It is **not** designed for human-written code or readability. The goal is to pro
 
 #### This generates ai_bundle.zip containing:
 
-repo tree snapshot
-
-git diff (if any)
-
-build/test/bench logs (best effort)
-
-machine info
+- repo tree snapshot
+- git diff (if any)
+- build/test/bench logs (best effort)
+- machine info
 
 #### Upload ai_bundle.zip to the AI, apply returned patches, and rerun.
 
