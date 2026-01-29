@@ -1,0 +1,43 @@
+name: bedrock-ci
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install minimal deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            cmake ninja-build python3
+
+      - name: Mark scripts executable (safety)
+        run: |
+          chmod +x bedrock/scripts/*.sh || true
+
+      - name: CI smoke (build + run + json validate + correctness gate)
+        env:
+          BEDROCK_CI_TARGET_NAME: linux_x86_64_avx2
+          BEDROCK_CI_VARIANT: scalar
+        run: |
+          bash bedrock/scripts/bench_smoke_ci.sh
+
+      - name: Upload bench output (debug)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bedrock-bench-out
+          path: bedrock/bench/out/*.json
+          if-no-files-found: ignore
