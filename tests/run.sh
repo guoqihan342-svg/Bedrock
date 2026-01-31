@@ -56,7 +56,7 @@ mkdir -p "$SAMPLES_DIR"
 # - Code block: ```diff ... ```
 awk -v outdir="$SAMPLES_DIR" '
   function trim(s){ sub(/^[ \t]+/,"",s); sub(/[ \t]+$/,"",s); return s; }
-  BEGIN { name=""; expect=""; in=0; file=""; }
+  BEGIN { name=""; expect=""; inside=0; file=""; }
 
   /^## (PASS|FAIL)-[0-9]+:/ {
     # Example: "## PASS-01: ..."
@@ -79,18 +79,18 @@ awk -v outdir="$SAMPLES_DIR" '
     file=outdir "/" name ".diff"
     # truncate
     printf "" > file
-    in=1
+    inside=1
     next
   }
 
-  in==1 && /^```[ \t]*$/ {
-    in=0
+  inside==1 && /^```[ \t]*$/ {
+    inside=0
     # record case only if file has something (allow empty-file add/delete with no hunks is still a diff header, so non-empty)
     print name " " expect " " file >> (outdir "/cases.list")
     next
   }
 
-  in==1 {
+  inside==1 {
     print $0 >> file
     next
   }
